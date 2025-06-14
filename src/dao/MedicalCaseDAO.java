@@ -7,7 +7,24 @@ import java.util.List;
 
 public class MedicalCaseDAO {
 
+    public boolean exists(int caseId) {
+        String sql = "SELECT 1 FROM MedicalCase WHERE case_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, caseId);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            System.out.println("Error checking existence: " + e.getMessage());
+            return false;
+        }
+    }
+
     public void addMedicalCase(MedicalCase medicalCase) {
+        if (exists(medicalCase.getCaseId())) {
+            System.out.println("Medical case ID already exists.");
+            return;
+        }
         String sql = "INSERT INTO MedicalCase (case_id, patient_id, diagnosis, treatment, case_date) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -16,9 +33,10 @@ public class MedicalCaseDAO {
             stmt.setString(3, medicalCase.getDiagnosis());
             stmt.setString(4, medicalCase.getTreatment());
             stmt.setDate(5, Date.valueOf(medicalCase.getCaseDate()));
-            stmt.executeUpdate();
+            int rows = stmt.executeUpdate();
+            if (rows > 0) System.out.println("Medical case added successfully.");
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            System.out.println("Error adding medical case: " + e.getMessage());
         }
     }
 
@@ -39,7 +57,7 @@ public class MedicalCaseDAO {
                 );
             }
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            System.out.println("Error retrieving case: " + e.getMessage());
         }
         return medicalCase;
     }
@@ -53,9 +71,11 @@ public class MedicalCaseDAO {
             stmt.setString(3, medicalCase.getTreatment());
             stmt.setDate(4, Date.valueOf(medicalCase.getCaseDate()));
             stmt.setInt(5, medicalCase.getCaseId());
-            stmt.executeUpdate();
+            int rows = stmt.executeUpdate();
+            if (rows > 0) System.out.println("Medical case updated.");
+            else System.out.println("No update occurred.");
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            System.out.println("Error updating medical case: " + e.getMessage());
         }
     }
 
@@ -64,9 +84,11 @@ public class MedicalCaseDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            stmt.executeUpdate();
+            int rows = stmt.executeUpdate();
+            if (rows > 0) System.out.println("Medical case deleted.");
+            else System.out.println("No deletion occurred.");
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            System.out.println("Error deleting medical case: " + e.getMessage());
         }
     }
 
@@ -87,9 +109,11 @@ public class MedicalCaseDAO {
                 cases.add(medicalCase);
             }
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            System.out.println("Error listing cases: " + e.getMessage());
         }
         return cases;
     }
 }
+
+
 

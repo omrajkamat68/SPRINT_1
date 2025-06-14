@@ -10,6 +10,7 @@ public class AppointmentService {
     }
 
     public static void displayScheduledTime(LocalDateTime time) {
-        System.out.println("Scheduled Appointment Time: " + time.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("hh:mm a");
+        System.out.println("Scheduled Appointment Time: " + time.format(outputFormat));
     }
 }

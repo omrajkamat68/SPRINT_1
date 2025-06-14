@@ -27,4 +27,12 @@ public class MedicalCase {
         System.out.printf("Case ID: %d | Patient ID: %d | Date: %s\nDiagnosis: %s\nTreatment: %s\n",
                 caseId, patientId, caseDate.toString(), diagnosis, treatment);
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "Case ID: %d | Patient ID: %d | Date: %s\nDiagnosis: %s\nTreatment: %s",
+                caseId, patientId, caseDate.toString(), diagnosis, treatment
+        );
+    }
 }

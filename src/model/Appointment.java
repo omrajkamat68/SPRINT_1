@@ -26,15 +26,14 @@ public class Appointment implements Displayable {
 
     @Override
     public void showDetails() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yy hh:mm a");
-        System.out.printf("Appointment ID: %d | Time: %s | Reason: %s%n",
-                id,
-                appointmentTime.format(formatter),
-                reason);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+        System.out.printf(
+                "Appointment ID: %d | Patient ID: %d | Doctor ID: %d | Time: %s | Reason: %s%n",
+                id, patientId, doctorId, appointmentTime.format(formatter), reason
+        );
     }
 
-
     public void printAppointment() {
-        showDetails(); // reuse
+        showDetails();
     }
 }

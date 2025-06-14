@@ -5,7 +5,9 @@ import util.AppointmentQueue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime; // ✅ Add this line
 import java.util.Scanner;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -28,13 +30,21 @@ public class Main {
 
             switch (choice) {
                 case 1 -> {
-                    System.out.print("Enter ID, Name, Age, Gender, Contact: ");
+                    System.out.print("Enter Patient ID: ");
                     int id = sc.nextInt();
+                    if (patientDAO.getPatientById(id) != null) {
+                        System.out.println("Patient ID already exists.");
+                        break;
+                    }
                     sc.nextLine();
+                    System.out.print("Enter Name: ");
                     String name = sc.nextLine();
+                    System.out.print("Enter Age: ");
                     int age = sc.nextInt();
                     sc.nextLine();
+                    System.out.print("Enter Gender: ");
                     String gender = sc.nextLine();
+                    System.out.print("Enter Contact: ");
                     String contact = sc.nextLine();
                     patientDAO.addPatient(new Patient(id, name, contact, age, gender));
                 }
@@ -42,30 +52,53 @@ public class Main {
                     System.out.print("Enter Patient ID: ");
                     int id = sc.nextInt();
                     Patient p = patientDAO.getPatientById(id);
-                    if (p != null) p.showDetails();
+                    if (p != null) {
+                        p.showDetails();
+                    } else {
+                        System.out.println("Patient not found.");
+                    }
                 }
                 case 3 -> {
-                    System.out.print("Enter ID to update: ");
+                    System.out.print("Enter Patient ID to update: ");
                     int id = sc.nextInt();
+                    if (patientDAO.getPatientById(id) == null) {
+                        System.out.println("Patient not found.");
+                        break;
+                    }
                     sc.nextLine();
-                    System.out.print("Enter new Name, Age, Gender, Contact: ");
+                    System.out.print("Enter new Name: ");
                     String name = sc.nextLine();
+                    System.out.print("Enter new Age: ");
                     int age = sc.nextInt();
                     sc.nextLine();
+                    System.out.print("Enter new Gender: ");
                     String gender = sc.nextLine();
+                    System.out.print("Enter new Contact: ");
                     String contact = sc.nextLine();
                     patientDAO.updatePatient(new Patient(id, name, contact, age, gender));
                 }
                 case 4 -> {
-                    System.out.print("Enter ID to delete: ");
-                    patientDAO.deletePatient(sc.nextInt());
+                    System.out.print("Enter Patient ID to delete: ");
+                    int id = sc.nextInt();
+                    if (patientDAO.getPatientById(id) == null) {
+                        System.out.println("Patient not found.");
+                        break;
+                    }
+                    patientDAO.deletePatient(id);
                 }
                 case 5 -> {
-                    System.out.print("Enter ID, Name, Specialization, Contact: ");
+                    System.out.print("Enter Doctor ID: ");
                     int id = sc.nextInt();
+                    if (doctorDAO.getDoctorById(id) != null) {
+                        System.out.println("Doctor ID already exists.");
+                        break;
+                    }
                     sc.nextLine();
+                    System.out.print("Enter Name: ");
                     String name = sc.nextLine();
+                    System.out.print("Enter Specialization: ");
                     String specialization = sc.nextLine();
+                    System.out.print("Enter Contact: ");
                     String contact = sc.nextLine();
                     doctorDAO.addDoctor(new Doctor(id, name, contact, specialization));
                 }
@@ -73,80 +106,178 @@ public class Main {
                     System.out.print("Enter Doctor ID: ");
                     int id = sc.nextInt();
                     Doctor d = doctorDAO.getDoctorById(id);
-                    if (d != null) d.showDetails();
+                    if (d != null) {
+                        d.showDetails();
+                    } else {
+                        System.out.println("Doctor not found.");
+                    }
                 }
                 case 7 -> {
-                    System.out.print("Enter ID to update: ");
+                    System.out.print("Enter Doctor ID to update: ");
                     int id = sc.nextInt();
+                    if (doctorDAO.getDoctorById(id) == null) {
+                        System.out.println("Doctor not found.");
+                        break;
+                    }
                     sc.nextLine();
-                    System.out.print("Enter new Name, Specialization, Contact: ");
+                    System.out.print("Enter new Name: ");
                     String name = sc.nextLine();
+                    System.out.print("Enter new Specialization: ");
                     String specialization = sc.nextLine();
+                    System.out.print("Enter new Contact: ");
                     String contact = sc.nextLine();
                     doctorDAO.updateDoctor(new Doctor(id, name, contact, specialization));
                 }
                 case 8 -> {
-                    System.out.print("Enter ID to delete: ");
-                    doctorDAO.deleteDoctor(sc.nextInt());
+                    System.out.print("Enter Doctor ID to delete: ");
+                    int id = sc.nextInt();
+                    if (doctorDAO.getDoctorById(id) == null) {
+                        System.out.println("Doctor not found.");
+                        break;
+                    }
+                    doctorDAO.deleteDoctor(id);
                 }
                 case 9 -> {
-                    System.out.print("Enter ID, PatientID, DoctorID, Time (yyyy-MM-dd HH:mm), Reason: ");
+                    System.out.print("Enter Appointment ID: ");
                     int id = sc.nextInt();
+                    if (appointmentDAO.getAppointmentById(id) != null) {
+                        System.out.println("Appointment ID already exists.");
+                        break;
+                    }
+
+                    System.out.print("Enter Patient ID: ");
                     int pid = sc.nextInt();
+                    if (patientDAO.getPatientById(pid) == null) {
+                        System.out.println("Invalid Patient ID. No such patient exists.");
+                        break;
+                    }
+
+                    System.out.print("Enter Doctor ID: ");
                     int did = sc.nextInt();
+                    if (doctorDAO.getDoctorById(did) == null) {
+                        System.out.println("Invalid Doctor ID. No such doctor exists.");
+                        break;
+                    }
+
                     sc.nextLine();
-                    LocalDateTime time = AppointmentService.parseAppointmentTime(sc.nextLine());
-                    String reason = sc.nextLine();
-                    appointmentDAO.addAppointment(new Appointment(id, pid, did, time, reason));
+                    try {
+                        System.out.print("Enter Date (yyyy-MM-dd): ");
+                        LocalDate date = LocalDate.parse(sc.nextLine());
+                        System.out.print("Enter Time (HH:mm): ");
+                        LocalTime time = LocalTime.parse(sc.nextLine());
+                        LocalDateTime dateTime = LocalDateTime.of(date, time);
+
+                        System.out.print("Enter Reason: ");
+                        String reason = sc.nextLine();
+
+                        appointmentDAO.addAppointment(new Appointment(id, pid, did, dateTime, reason));
+                    } catch (Exception e) {
+                        System.out.println("Invalid date or time format. Please use yyyy-MM-dd for date and HH:mm for time.");
+                    }
                 }
                 case 10 -> {
                     System.out.print("Enter Appointment ID: ");
                     Appointment ap = appointmentDAO.getAppointmentById(sc.nextInt());
-                    if (ap != null) ap.printAppointment();
+                    if (ap != null) {
+                        ap.printAppointment();
+                    } else {
+                        System.out.println("Appointment not found.");
+                    }
                 }
                 case 11 -> {
-                    System.out.print("Enter ID to update: ");
+                    System.out.print("Enter Appointment ID to update: ");
                     int id = sc.nextInt();
-                    System.out.print("Enter new PatientID, DoctorID, Time (yyyy-MM-dd HH:mm), Reason: ");
+                    if (appointmentDAO.getAppointmentById(id) == null) {
+                        System.out.println("No appointment exists with that ID.");
+                        break;
+                    }
+                    System.out.print("Enter new Patient ID: ");
                     int pid = sc.nextInt();
+                    if (patientDAO.getPatientById(pid) == null) {
+                        System.out.println("Invalid Patient ID.");
+                        break;
+                    }
+                    System.out.print("Enter new Doctor ID: ");
                     int did = sc.nextInt();
+                    if (doctorDAO.getDoctorById(did) == null) {
+                        System.out.println("Invalid Doctor ID.");
+                        break;
+                    }
                     sc.nextLine();
+                    System.out.print("Enter new Time (yyyy-MM-dd HH:mm): ");
                     LocalDateTime time = AppointmentService.parseAppointmentTime(sc.nextLine());
+                    System.out.print("Enter new Reason: ");
                     String reason = sc.nextLine();
                     appointmentDAO.updateAppointment(new Appointment(id, pid, did, time, reason));
                 }
                 case 12 -> {
-                    System.out.print("Enter ID to delete: ");
-                    appointmentDAO.deleteAppointment(sc.nextInt());
+                    System.out.print("Enter Appointment ID to delete: ");
+                    int id = sc.nextInt();
+                    if (appointmentDAO.getAppointmentById(id) == null) {
+                        System.out.println("Appointment not found.");
+                        break;
+                    }
+                    appointmentDAO.deleteAppointment(id);
                 }
                 case 13 -> {
-                    System.out.print("Enter CaseID, PatientID, Diagnosis, Treatment, Date (yyyy-MM-dd): ");
+                    System.out.print("Enter Case ID: ");
                     int caseId = sc.nextInt();
+                    if (medicalCaseDAO.exists(caseId)) {
+                        System.out.println("Medical Case ID already exists.");
+                        break;
+                    }
+                    System.out.print("Enter Patient ID: ");
                     int patientId = sc.nextInt();
+                    if (patientDAO.getPatientById(patientId) == null) {
+                        System.out.println("Invalid Patient ID.");
+                        break;
+                    }
                     sc.nextLine();
+                    System.out.print("Enter Diagnosis: ");
                     String diagnosis = sc.nextLine();
+                    System.out.print("Enter Treatment: ");
                     String treatment = sc.nextLine();
+                    System.out.print("Enter Date (yyyy-MM-dd): ");
                     LocalDate date = LocalDate.parse(sc.nextLine());
                     medicalCaseDAO.addMedicalCase(new MedicalCase(caseId, patientId, diagnosis, treatment, date));
                 }
                 case 14 -> {
                     System.out.print("Enter Case ID: ");
-                    MedicalCase mc = medicalCaseDAO.getMedicalCaseById(sc.nextInt());
+                    int id = sc.nextInt();
+                    MedicalCase mc = medicalCaseDAO.getMedicalCaseById(id);
                     if (mc != null) System.out.println(mc);
+                    else System.out.println("Medical case not found.");
                 }
                 case 15 -> {
-                    System.out.print("Enter ID to update: ");
+                    System.out.print("Enter Case ID to update: ");
                     int caseId = sc.nextInt();
+                    if (!medicalCaseDAO.exists(caseId)) {
+                        System.out.println("Medical case not found.");
+                        break;
+                    }
+                    System.out.print("Enter Patient ID: ");
                     int patientId = sc.nextInt();
+                    if (patientDAO.getPatientById(patientId) == null) {
+                        System.out.println("Invalid Patient ID.");
+                        break;
+                    }
                     sc.nextLine();
+                    System.out.print("Enter new Diagnosis: ");
                     String diagnosis = sc.nextLine();
+                    System.out.print("Enter new Treatment: ");
                     String treatment = sc.nextLine();
+                    System.out.print("Enter new Date (yyyy-MM-dd): ");
                     LocalDate date = LocalDate.parse(sc.nextLine());
                     medicalCaseDAO.updateMedicalCase(new MedicalCase(caseId, patientId, diagnosis, treatment, date));
                 }
                 case 16 -> {
                     System.out.print("Enter Case ID to delete: ");
-                    medicalCaseDAO.deleteMedicalCase(sc.nextInt());
+                    int caseId = sc.nextInt();
+                    if (!medicalCaseDAO.exists(caseId)) {
+                        System.out.println("Medical case not found.");
+                        break;
+                    }
+                    medicalCaseDAO.deleteMedicalCase(caseId);
                 }
                 case 0 -> System.exit(0);
                 default -> System.out.println("Invalid option.");
@@ -154,3 +285,4 @@ public class Main {
         }
     }
 }
+

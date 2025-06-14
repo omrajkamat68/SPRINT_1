@@ -1,7 +1,6 @@
 package dao;
 
 import model.Patient;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +8,11 @@ import java.util.List;
 public class PatientDAO {
 
     public void addPatient(Patient patient) {
+        if (getPatientById(patient.getId()) != null) {
+            System.out.println("Patient ID already exists. Cannot insert.");
+            return;
+        }
+
         String sql = "INSERT INTO Patient (patient_id, name, age, gender, contact) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
@@ -20,9 +24,9 @@ public class PatientDAO {
             stmt.setString(4, patient.getGender());
             stmt.setString(5, patient.getContact());
 
-            stmt.executeUpdate();
-            System.out.println("Inserted Patient successfully.");
-
+            int rows = stmt.executeUpdate();
+            if (rows > 0)
+                System.out.println("Patient inserted successfully.");
         } catch (SQLException e) {
             System.err.println("Error inserting patient: " + e.getMessage());
         }
@@ -56,6 +60,11 @@ public class PatientDAO {
     }
 
     public void updatePatient(Patient patient) {
+        if (getPatientById(patient.getId()) == null) {
+            System.out.println("Patient not found. Cannot update.");
+            return;
+        }
+
         String sql = "UPDATE Patient SET name = ?, age = ?, gender = ?, contact = ? WHERE patient_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
@@ -68,14 +77,19 @@ public class PatientDAO {
             stmt.setInt(5, patient.getId());
 
             int rows = stmt.executeUpdate();
-            System.out.println("Updated Patient, rows affected: " + rows);
-
+            if (rows > 0)
+                System.out.println("Patient updated successfully.");
         } catch (SQLException e) {
             System.err.println("Error updating patient: " + e.getMessage());
         }
     }
 
     public void deletePatient(int id) {
+        if (getPatientById(id) == null) {
+            System.out.println("Patient not found. Cannot delete.");
+            return;
+        }
+
         String sql = "DELETE FROM Patient WHERE patient_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
@@ -83,8 +97,8 @@ public class PatientDAO {
 
             stmt.setInt(1, id);
             int rows = stmt.executeUpdate();
-            System.out.println("Deleted Patient, rows affected: " + rows);
-
+            if (rows > 0)
+                System.out.println("Patient deleted successfully.");
         } catch (SQLException e) {
             System.err.println("Error deleting patient: " + e.getMessage());
         }
