@@ -5,10 +5,23 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class AppointmentQueue {
-    private Queue<Appointment> queue = new LinkedList<>();
+    private final Queue<Appointment> queue = new LinkedList<>();
 
     public void enqueue(Appointment a) {
         queue.add(a);
+    }
+
+    public void clear() {
+        queue.clear();
+    }
+
+
+    public Appointment peek() {
+        return queue.peek();
+    }
+
+    public Appointment dequeue() {
+        return queue.poll(); // ✅ Added this line
     }
 
     public void processAppointments() {
@@ -18,3 +31,4 @@ public class AppointmentQueue {
         }
     }
 }
+

@@ -1,13 +1,14 @@
 import dao.*;
 import model.*;
+import java.time.format.DateTimeFormatter;
+
 import service.AppointmentService;
 import util.AppointmentQueue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime; // ✅ Add this line
+import java.time.LocalTime;
 import java.util.Scanner;
-
 
 public class Main {
     public static void main(String[] args) {
@@ -16,6 +17,12 @@ public class Main {
         DoctorDAO doctorDAO = new DoctorDAO();
         AppointmentDAO appointmentDAO = new AppointmentDAO();
         MedicalCaseDAO medicalCaseDAO = new MedicalCaseDAO();
+        AppointmentQueue appointmentQueue = new AppointmentQueue();
+
+        // Enhancement: Load existing appointments into queue at startup
+        for (Appointment appt : appointmentDAO.getAllAppointments()) {
+            appointmentQueue.enqueue(appt);
+        }
 
         while (true) {
             System.out.println("\n--- MediConnect CRM ---");
@@ -23,6 +30,7 @@ public class Main {
             System.out.println("5. Add Doctor\n6. View Doctor\n7. Update Doctor\n8. Delete Doctor");
             System.out.println("9. Add Appointment\n10. View Appointment\n11. Update Appointment\n12. Delete Appointment");
             System.out.println("13. Add Medical Case\n14. View Medical Case\n15. Update Medical Case\n16. Delete Medical Case");
+            System.out.println("17. Process Appointments Queue");
             System.out.println("0. Exit");
             System.out.print("Choose an option: ");
             int choice = sc.nextInt();
@@ -170,9 +178,18 @@ public class Main {
                         System.out.print("Enter Reason: ");
                         String reason = sc.nextLine();
 
-                        appointmentDAO.addAppointment(new Appointment(id, pid, did, dateTime, reason));
+                        Appointment appt = new Appointment(id, pid, did, dateTime, reason);
+                        appointmentDAO.addAppointment(appt);
+                        appointmentQueue.enqueue(appt);
+
+                        System.out.println("Appointment added and queued.");
+                        System.out.println("Next appointment in queue:");
+                        Appointment peeked = appointmentQueue.peek();
+                        if (peeked != null) peeked.printAppointment();
+                        else System.out.println("No upcoming appointments in queue.");
+
                     } catch (Exception e) {
-                        System.out.println("Invalid date or time format. Please use yyyy-MM-dd for date and HH:mm for time.");
+                        System.out.println("Invalid date or time format. Use yyyy-MM-dd and HH:mm.");
                     }
                 }
                 case 10 -> {
@@ -279,10 +296,32 @@ public class Main {
                     }
                     medicalCaseDAO.deleteMedicalCase(caseId);
                 }
+                case 17 -> {
+                    System.out.println("\nProcessing Appointments:");
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+                    // Reload queue from DB
+                    appointmentQueue.clear();  // ← You need to add this method in AppointmentQueue
+                    for (Appointment appt : appointmentDAO.getAllAppointments()) {
+                        appointmentQueue.enqueue(appt);
+                    }
+
+                    while (appointmentQueue.peek() != null) {
+                        Appointment appt = appointmentQueue.dequeue();
+                        System.out.printf(
+                                "Appointment ID: %d | Patient ID: %d | Doctor ID: %d | Time: %s | Reason: %s\n",
+                                appt.getId(),
+                                appt.getPatientId(),
+                                appt.getDoctorId(),
+                                appt.getAppointmentTime().format(formatter),
+                                appt.getReason()
+                        );
+                    }
+                }
+
                 case 0 -> System.exit(0);
                 default -> System.out.println("Invalid option.");
             }
         }
     }
 }
-
