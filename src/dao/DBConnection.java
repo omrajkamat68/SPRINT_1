@@ -14,7 +14,7 @@ public class DBConnection {
             return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException e) {
             System.err.println("Error connecting to database: " + e.getMessage());
-            return null; // or throw a runtime exception if you want to terminate
+            return null;
         }
     }
 }

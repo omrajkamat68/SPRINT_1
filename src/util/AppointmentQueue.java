@@ -21,7 +21,7 @@ public class AppointmentQueue {
     }
 
     public Appointment dequeue() {
-        return queue.poll(); // ✅ Added this line
+        return queue.poll();
     }
 
     public void processAppointments() {

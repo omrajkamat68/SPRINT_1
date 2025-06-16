@@ -300,8 +300,7 @@ public class Main {
                     System.out.println("\nProcessing Appointments:");
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-                    // Reload queue from DB
-                    appointmentQueue.clear();  // ← You need to add this method in AppointmentQueue
+                    appointmentQueue.clear();
                     for (Appointment appt : appointmentDAO.getAllAppointments()) {
                         appointmentQueue.enqueue(appt);
                     }

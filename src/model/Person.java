@@ -15,5 +15,5 @@ public abstract class Person implements Displayable {
     public String getName() { return name; }
     public String getContact() { return contact; }
 
-    public abstract void showDetails(); // inherited from Displayable
+    public abstract void showDetails();
 }
