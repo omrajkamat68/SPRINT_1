@@ -208,25 +208,37 @@ public class Main {
                         System.out.println("No appointment exists with that ID.");
                         break;
                     }
+
                     System.out.print("Enter new Patient ID: ");
                     int pid = sc.nextInt();
                     if (patientDAO.getPatientById(pid) == null) {
                         System.out.println("Invalid Patient ID.");
                         break;
                     }
+
                     System.out.print("Enter new Doctor ID: ");
                     int did = sc.nextInt();
                     if (doctorDAO.getDoctorById(did) == null) {
                         System.out.println("Invalid Doctor ID.");
                         break;
                     }
-                    sc.nextLine();
-                    System.out.print("Enter new Time (yyyy-MM-dd HH:mm): ");
-                    LocalDateTime time = AppointmentService.parseAppointmentTime(sc.nextLine());
-                    System.out.print("Enter new Reason: ");
-                    String reason = sc.nextLine();
-                    appointmentDAO.updateAppointment(new Appointment(id, pid, did, time, reason));
+
+                    sc.nextLine(); // consume leftover newline
+
+                    try {
+                        System.out.print("Enter new Time (yyyy-MM-dd HH:mm): ");
+                        String timeInput = sc.nextLine();
+                        LocalDateTime time = AppointmentService.parseAppointmentTime(timeInput);
+
+                        System.out.print("Enter new Reason: ");
+                        String reason = sc.nextLine();
+
+                        appointmentDAO.updateAppointment(new Appointment(id, pid, did, time, reason));
+                    } catch (Exception e) {
+                        System.out.println("Invalid date or time format. Use yyyy-MM-dd and HH:mm.");
+                    }
                 }
+
                 case 12 -> {
                     System.out.print("Enter Appointment ID to delete: ");
                     int id = sc.nextInt();
