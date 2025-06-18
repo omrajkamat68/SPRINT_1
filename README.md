@@ -98,7 +98,7 @@ src/
 
 ## 🧑‍💻 Sprint Pod Members
 
-- Mohd Saif Ali  
+- Mohammed Saif Ali  
 - Nachu Praveen Kumar  
 - Neela Bhavana  
 - Omraj Kamat  
