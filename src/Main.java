@@ -19,7 +19,6 @@ public class Main {
         MedicalCaseDAO medicalCaseDAO = new MedicalCaseDAO();
         AppointmentQueue appointmentQueue = new AppointmentQueue();
 
-        // Enhancement: Load existing appointments into queue at startup
         for (Appointment appt : appointmentDAO.getAllAppointments()) {
             appointmentQueue.enqueue(appt);
         }
@@ -223,7 +222,7 @@ public class Main {
                         break;
                     }
 
-                    sc.nextLine(); // consume leftover newline
+                    sc.nextLine();
 
                     try {
                         System.out.print("Enter new Time (yyyy-MM-dd HH:mm): ");
